@@ -1,188 +1,79 @@
-# HOA Management Companies Scraper
+# HOA-USA Management Companies Scraper
 
-A comprehensive Python web scraper for extracting HOA management company data from all US states on hoa-usa.com.
+This Python script scrapes **Homeowners Association (HOA) management companies** across all 50 U.S. states from [https://hoa-usa.com](https://hoa-usa.com). It collects information about both **Recommended** and **Regular** companies.
 
-## Features
+## ✅ Features
 
-- **Complete Data Extraction**: Scrapes both "Recommended" and "Regular" HOA management companies
-- **Web Interface**: User-friendly Flask web application with real-time progress tracking
-- **Data Processing**: Automatic data cleaning and validation
-- **CSV Export**: Clean, structured data export with proper formatting
-- **State Selection**: Option to scrape specific states or all 50 states
-- **Progress Monitoring**: Real-time status updates and error tracking
+- Scrapes **Company Name, Website, Phone, Email, Service Area, Description**
+- Covers **all 50 U.S. states**
+- Differentiates between **Recommended** and **Regular** listings
+- Cleans and validates phone numbers, emails, and URLs
+- Retries failed requests with backoff
+- Outputs a clean `.csv` file with timestamp
+- Logs progress and errors
 
-## Installation
+## 🛠 Requirements
 
-### Prerequisites
+- Python 3.7+
+- Install required packages:
 
-- Python 3.8 or higher
-- pip (Python package installer)
-
-### Setup Instructions
-
-1. **Clone or download the project files**
-   ```bash
-   mkdir hoa-scraper
-   cd hoa-scraper
-   ```
-
-2. **Create a virtual environment (recommended)**
-   ```bash
-   python -m venv venv
-   
-   # On Windows:
-   venv\Scripts\activate
-   
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-
-3. **Install required packages**
-   ```bash
-   pip install flask beautifulsoup4 requests pandas lxml trafilatura
-   ```
-
-4. **Create required directories**
-   ```bash
-   mkdir static templates output
-   ```
-
-5. **Copy all the provided Python files to your project directory**
-
-## Project Structure
-
-```
-hoa-scraper/
-├── app.py              # Main Flask application
-├── scraper.py          # Core scraping logic
-├── data_processor.py   # Data cleaning and processing
-├── config.py           # Configuration settings
-├── utils.py            # Utility functions
-├── templates/
-│   └── index.html      # Web interface template
-├── static/
-│   └── style.css       # CSS styling
-└── output/             # Generated CSV files
+```bash
+pip install requests pandas beautifulsoup4
 ```
 
-## Usage
+## 🚀 How to Run
 
-### Running the Application
+### 🔁 Option 1: Scrape All 50 States
 
-1. **Start the web application**
-   ```bash
-   python app.py
-   ```
-
-2. **Open your web browser and go to:**
-   ```
-   http://localhost:5000
-   ```
-
-3. **Using the Web Interface:**
-   - Set delay between requests (recommended: 2-3 seconds)
-   - Select specific states or leave blank for all states
-   - Click "Start Scraping"
-   - Monitor progress in real-time
-   - Download CSV file when complete
-
-### Command Line Usage
-
-You can also run the scraper directly from command line:
-
-```python
-from scraper import HOAScraper
-
-# Create scraper instance
-scraper = HOAScraper(delay_between_requests=2)
-
-# Scrape specific states
-output_file = scraper.scrape_all_states(selected_states=['Alabama', 'California'])
-
-# Scrape all states
-output_file = scraper.scrape_all_states()
-
-print(f"Data saved to: {output_file}")
+```bash
+python hoa_scraper.py --all
 ```
 
-## Configuration
+### 🔁 Option 2: Scrape Specific States
 
-You can modify settings in `config.py`:
+```bash
+python hoa_scraper.py --states California Texas Florida
+```
 
-- `DEFAULT_DELAY`: Time between requests (seconds)
-- `MAX_RETRIES`: Number of retry attempts for failed requests
-- `TIMEOUT`: Request timeout (seconds)
-- `US_STATES`: List of states to scrape
+### 🕓 Optional: Add Custom Delay Between Requests (default is 2 seconds)
 
-## Output Data
+```bash
+python hoa_scraper.py --all --delay 5
+```
 
-The scraper generates CSV files with the following columns:
+## 🗂 Output
 
-- `name`: Company name
-- `state`: State where company operates
-- `section_type`: "recommended" or "regular"
-- `phone`: Phone number (formatted)
-- `email`: Email address
-- `website`: Company website URL
-- `service_area`: Geographic service area
-- `address`: Company address
-- `extracted_city`: City extracted from address
-- `extracted_state`: State extracted from address
-- `description`: Company description (for recommended companies)
-- `source_url`: Original webpage URL
+- The output will be saved in the current directory as:
 
-## Features Explained
+```
+hoa_companies_YYYYMMDD_HHMMSS.csv
+```
 
-### Data Sections Captured
+- Columns:
+  - `name`
+  - `state`
+  - `section_type` (`recommended` or `regular`)
+  - `phone`
+  - `email`
+  - `website`
+  - `service_area`
+  - `description`
 
-1. **Recommended Companies**: Detailed listings with rich information including descriptions, emails, and complete contact details
-2. **Regular Companies**: Basic listings with company name, phone, and service area
+## 📌 Notes
 
-### Data Processing
+- **Recommended companies** have rich data and are handled using structured HTML tags.
+- **Regular companies** have limited structure, parsed using pattern matching.
+- If no state is specified, the script defaults to scraping **Alabama** (for testing).
 
-- Phone number formatting to standard US format
-- Email validation and cleaning
-- Website URL validation
-- Duplicate removal based on company name and state
-- Text cleaning and normalization
+## 📋 Example Logs
 
-### Error Handling
+```
+2025-06-05 18:32:12 - INFO - Fetching: https://hoa-usa.com/management-directory/?state=Texas
+2025-06-05 18:32:15 - INFO - Found 42 companies for Texas (Recommended: 8, Regular: 34)
+```
 
-- Automatic retry for failed requests
-- Comprehensive error logging
-- Graceful handling of missing data
-- Progress tracking with error reporting
+## 🧼 Cleaning Details
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Connection Errors**: Increase delay between requests if you get blocked
-2. **Empty Results**: Check internet connection and website availability
-3. **Permission Errors**: Ensure write permissions for output directory
-
-### Performance Tips
-
-- Use 2-3 second delays to avoid being blocked
-- Run during off-peak hours for better reliability
-- Monitor logs for any recurring errors
-
-## Legal Considerations
-
-- This scraper is for educational and research purposes
-- Respect the website's robots.txt and terms of service
-- Use reasonable delays between requests
-- Don't overload the target server
-
-## Support
-
-If you encounter issues:
-
-1. Check the log files for detailed error messages
-2. Ensure all dependencies are properly installed
-3. Verify internet connectivity
-4. Try running with fewer states first to test
-
-## Updates and Maintenance
-
-The scraper may need updates if the target website structure changes. Monitor the logs for extraction errors and update the selectors accordingly.
+- Phone numbers are normalized to `(XXX) XXX-XXXX` format.
+- Email and websites are stripped and validated using regex.
+- Duplicate companies (by name + state) are removed.
